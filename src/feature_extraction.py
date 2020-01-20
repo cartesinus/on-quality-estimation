@@ -63,13 +63,13 @@ def get_use_similarity(path: str, src_column: str,
             zip(df['en-US'], df['de-DE'])]
 
 
-def do_everything(path: str, src_column: str,
-                       trg_column: str) -> List[float]:
+def feature_extraction(input_file: str) -> List[float]:
     '''
         Compute similarity score column for file stated in input path.
         This method use Universal Sentence Encoder.
     '''
-    df = pd.read_csv(path, delimiter='\t')
+    df = pd.read_csv(input_file, delimiter='\t')
 
-    return [[no_tokens(src), no_tokens(trg), text_avg_len(src), no_punctuations(src), no_punctuations(trg)] for src, trg in
-            zip(df['en-US'], df['de-DE'])]
+    return [[no_tokens(src), no_tokens(trg), text_avg_len(src),
+             no_punctuations(src), no_punctuations(trg)] for src, trg in
+            zip(df['src'], df['trg'])]

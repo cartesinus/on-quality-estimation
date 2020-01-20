@@ -1,2 +1,4 @@
 .ropeproject
 predicted.tsv
+*/__pycache__/
+data

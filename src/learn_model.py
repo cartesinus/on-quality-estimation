@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# encoding: utf-8
-
 # dataloader
 from src.utils import load_datasets
 # pipeline
@@ -15,16 +12,6 @@ from sklearn.metrics import f1_score
 # general
 import logging as log
 import numpy as np
-import sys
-import yaml
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
-
-
-__all__ = []
-__version__ = '0.1.0'
-
-DEFAULT_SEP = "\t"
-DEBUG = 1
 
 
 def set_selection_method(config):
@@ -215,15 +202,19 @@ def fit_predict(config, X_train, y_train, X_test=None, y_test=None,
         except:
             pass
 
-        with open("predicted.tsv", 'w') as f:
-            for hyp, ref in zip(y_test, y_hat):
-                f.write("%s\t%s\n" % (hyp, ref))
+        predict_file = config.get("predict", None)
+        if predict_file:
+            with open(predict_file, 'w') as f:
+                for hyp, ref in zip(y_test, y_hat):
+                    f.write("%s\t%s\n" % (hyp, ref))
+
+    return clf
 
 
-def run(config):
+def learn_model(config):
     '''
-    Runs the main code of the program. Checks for mandatory parameters, opens
-    input files and performs the learning steps.
+    Checks for mandatory parameters, opens input files and performs the
+    learning steps.
     '''
     # check if the mandatory parameters are set in the config file
     x_train_path = config.get("x_train", None)
@@ -258,52 +249,5 @@ def run(config):
         load_datasets(x_train_path, y_train_path, x_test_path, y_test_path)
 
     # fits training data and predicts the test set using the trained model
-    fit_predict(config, X_train, y_train, X_test, y_test, config.get("ref_thd",
-                                                                     None))
-
-
-def main(argv=None):  # IGNORE:C0111
-    '''Command line options.'''
-
-    if argv is None:
-        argv = sys.argv
-    else:
-        sys.argv.extend(argv)
-
-    try:
-        # Setup argument parser
-        parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter)
-
-        parser.add_argument("configuration_file", action="store",
-                            help="path to the configuration file (YAML file).")
-        parser.add_argument("-v", "--verbose", dest="verbose", action="count",
-                            help="set verbosity level [default: %(default)s]")
-        parser.add_argument('-V', '--version', action='version',
-                            version=__version__)
-
-        # Process arguments
-        args = parser.parse_args()
-
-        cfg_path = args.configuration_file
-
-        if args.verbose:
-            log.basicConfig(level=log.DEBUG)
-        else:
-            log.basicConfig(level=log.INFO)
-
-        # opens the config file
-        config = None
-        with open(cfg_path, "r") as cfg_file:
-            config = yaml.safe_load(cfg_file.read())
-
-        run(config)
-
-    except KeyboardInterrupt:
-        # handle keyboard interrupt ###
-        return 0
-
-if __name__ == "__main__":
-    if DEBUG:
-        sys.argv.append("-v")
-
-    sys.exit(main())
+    return fit_predict(config, X_train, y_train, X_test, y_test,
+                       config.get("ref_thd", None))

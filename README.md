@@ -8,11 +8,23 @@ The data consists of:
 
 Running
 =======
-The program takes only one input parameter, the configuration file. For example:
+The program takes as an input; method, config file and additional parameters.
 
+For example, to train model:
 ```
-./learn_model.py config/svc.yaml
+./quality_estimation.py --train --config config/svc.yaml
 ```
+
+To inference model on given input:
+```
+./quality_estimation.py --inference --config config/svc.yaml --input test.tsv
+```
+
+To extract features from tsv file (needed columnt: src and trg):
+```
+./quality_estimation.py --feature_extraction --input test.tsv
+```
+
 
 
 Available algorithms
