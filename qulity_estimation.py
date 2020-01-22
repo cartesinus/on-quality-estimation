@@ -13,7 +13,7 @@ from src.learn_model import learn_model
 # model inference
 from src.inference import inference_from_file
 # feature extraction
-# from src.feature_extraction import extract_features
+from src.feature_extraction import extract_features
 
 
 __all__ = []
@@ -45,6 +45,8 @@ def main(argv=None):  # IGNORE:C0111
                             help="learn model defined in config file.")
         parser.add_argument("-i", "--input", dest="input", action="store",
                             help="load input file to run inference on it.")
+        parser.add_argument("-o", "--output", dest="output", action="store",
+                            help="write program output to file.")
         parser.add_argument("-p", "--inference", dest="inference",
                             action="store_true",
                             help="load model stated in config file on input.")
@@ -55,29 +57,37 @@ def main(argv=None):  # IGNORE:C0111
         # Process arguments
         args = parser.parse_args()
 
-        cfg_path = args.config
-
         if args.verbose:
             log.basicConfig(level=log.DEBUG)
         else:
             log.basicConfig(level=log.INFO)
 
-        # opens the config file
-        cfg = None
-        with open(cfg_path, "r") as cfg_file:
-            cfg = yaml.safe_load(cfg_file.read())
+        # opens the config file (if available)
+        cfg_path = args.config
+        if cfg_path:
+            cfg = None
+            with open(cfg_path, "r") as cfg_file:
+                cfg = yaml.safe_load(cfg_file.read())
 
-        model_file_path = cfg.get("model", None)
-        if args.train:
-            model = learn_model(cfg)
-            if model_file_path:
+            model_file_path = cfg.get("model", None)
+
+            if args.train:
+                model = learn_model(cfg)
                 dump(model, model_file_path)
-        elif args.inference:
-            if model_file_path:
+            elif args.inference:
                 model = load(model_file_path)
                 inference_from_file(model, args.input)
-#        elif args.feature_extraction:
-#            extract_features(args.input)
+
+        elif args.feature_extraction:
+            features = extract_features(args.input)
+            if args.output:
+                with open(args.output, 'w') as outfile:
+                    for line in features:
+                        outfile.write("\t".join([str(x) for x in line]))
+                        outfile.write("\n")
+            else:
+                for line in features:
+                    print("\t".join([str(x) for x in line]))
 
     except KeyboardInterrupt:
         # handle keyboard interrupt ###
