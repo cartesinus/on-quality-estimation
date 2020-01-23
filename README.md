@@ -82,20 +82,20 @@ Sentence-level Baseline Features
 ================================
 Following features are used in WMT12-17 quality estimation shared task and are considered as baseline features:
 
-1. number of tokens in the source sentence
-2. number of tokens in the target sentence
-3. average source token length
-4. LM probability of source sentence
-5. LM probability of target sentence
-6. number of occurrences of the target word within the target hypothesis (averaged for all words in the hypothesis - type/token ratio)
-7. average number of translations per source word in the sentence (as given by IBM 1 table thresholded such that prob(t|s) > 0.2)
-8. average number of translations per source word in the sentence (as given by IBM 1 table thresholded such that prob(t|s) > 0.01) weighted by the inverse frequency of each word in the source corpus
-9. percentage of unigrams in quartile 1 of frequency (lower frequency words) in a corpus of the source language (SMT training corpus)
-10. percentage of unigrams in quartile 4 of frequency (higher frequency words) in a corpus of the source language
-11. percentage of bigrams in quartile 1 of frequency of source words in a corpus of the source language
-12. percentage of bigrams in quartile 4 of frequency of source words in a corpus of the source language
-13. percentage of trigrams in quartile 1 of frequency of source words in a corpus of the source language
-14. percentage of trigrams in quartile 4 of frequency of source words in a corpus of the source language
-15. percentage of unigrams in the source sentence seen in a corpus (SMT training corpus)
-16. number of punctuation marks in the source sentence
-17. number of punctuation marks in the target sentence
+1. (f1001) number of tokens in the source sentence
+2. (f1002) number of tokens in the target sentence
+3. (f1006) average source token length
+4. (f1009) LM probability of source sentence
+5. (f1012) LM probability of target sentence
+6. (f1015) number of occurrences of the target word within the target hypothesis (averaged for all words in the hypothesis - type/token ratio)
+7. (f1022) average number of translations per source word in the sentence (as given by IBM 1 table thresholded such that prob(t|s) > 0.2)
+8. (f1036) average number of translations per source word in the sentence (as given by IBM 1 table thresholded such that prob(t|s) > 0.01) weighted by the inverse frequency of each word in the source corpus
+9. (f1046) percentage of unigrams in quartile 1 of frequency (lower frequency words) in a corpus of the source language (SMT training corpus)
+10. (f1049) percentage of unigrams in quartile 4 of frequency (higher frequency words) in a corpus of the source language
+11. (f1050) percentage of bigrams in quartile 1 of frequency of source words in a corpus of the source language
+12. (f1053) percentage of bigrams in quartile 4 of frequency of source words in a corpus of the source language
+13. (f1054) percentage of trigrams in quartile 1 of frequency of source words in a corpus of the source language
+14. (f1057) percentage of trigrams in quartile 4 of frequency of source words in a corpus of the source language
+15. (f1058) percentage of unigrams in the source sentence seen in a corpus (SMT training corpus)
+16. (f1074) number of punctuation marks in the source sentence
+17. (f1075) number of punctuation marks in the target sentence
