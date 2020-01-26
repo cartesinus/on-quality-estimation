@@ -6,6 +6,8 @@ from sklearn.feature_selection import SelectFromModel
 # method related
 from sklearn.svm import SVR, SVC, LinearSVC
 from sklearn.model_selection import GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 # evaluation related
 from src.utils import accuracy
 from sklearn.metrics import f1_score
@@ -145,6 +147,35 @@ def set_learning_method(config, X_train, y_train):
                                 verbose=p.get('verbose', False))
             else:
                 estimator = SVC()
+        elif method_name == "DecisionTree":
+            if o:
+                tune_params = set_optimization_params(o)
+                estimator = optimize_model(DecisionTreeClassifier(), X_train,
+                                           y_train, tune_params,
+                                           scorers,
+                                           o.get('cv', 5),
+                                           o.get('verbose', True),
+                                           o.get('n_jobs', 1))
+            elif p:
+                estimator = DecisionTreeClassifier(max_depth=p.get('max_depth', 100))
+            else:
+                estimator = DecisionTreeClassifier()
+        elif method_name == "MLP":
+            if o:
+                tune_params = set_optimization_params(o)
+                estimator = optimize_model(MLPClassifier(), X_train,
+                                           y_train, tune_params,
+                                           scorers,
+                                           o.get('cv', 5),
+                                           o.get('verbose', True),
+                                           o.get('n_jobs', 1))
+            elif p:
+                estimator = MLPClassifier(solver=p.get('solver', 'lbfgs'),
+                                          alpha=p.get('alpha', 1e-5,
+                                          hidden_layer_sizes=p.get('hidden_layer_size', (5, 2)),
+                                          random_state=p.get('random_state', 1)))
+            else:
+                estimator = MLPClassifier()
 
     return estimator, scorers
 

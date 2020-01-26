@@ -31,7 +31,7 @@ To inference model on given input:
 
 To extract features from tsv file (needed columnt: src and trg):
 ```
-./quality_estimation.py --feature_extraction --input test.tsv
+./qulity_estimation.py -v --src_lm_path data/lm.tok.en --trg_lm_path data/lm.tok.de --trg_ncount_path data/ngram-count.de -f -i test.tsv
 ```
 
 

@@ -159,3 +159,4 @@ dependencies:
     - sentencepiece==0.1.85
     - tensorflow-text==2.0.1
     - tf-sentencepiece==0.1.85
+    - nltk==3.4.5

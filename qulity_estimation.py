@@ -5,6 +5,7 @@
 import logging as log
 import sys
 import yaml
+import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 # model save and load
 from joblib import dump, load
@@ -16,8 +17,7 @@ from src.inference import inference_from_file
 from src.feature_extraction import extract_features
 
 
-__all__ = []
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 DEFAULT_SEP = "\t"
 DEBUG = 1
@@ -35,24 +35,30 @@ def main(argv=None):  # IGNORE:C0111
         # Setup argument parser
         parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter)
 
-        parser.add_argument("-c", "--config", action="store", dest="config",
-                            help="path to the configuration file (YAML file).")
         parser.add_argument("-v", "--verbose", dest="verbose", action="count",
                             help="set verbosity level [default: %(default)s]")
         parser.add_argument('-V', '--version', action='version',
                             version=__version__)
+        parser.add_argument("-c", "--config", action="store", dest="config",
+                            help="path to the configuration file (YAML file).")
+        parser.add_argument("-b", "--srilm_path", action="store", dest="srilm_path",
+                            help="path to where srilm binaries are.")
+        parser.add_argument("-l", "--src_lm_path", action="store", dest="src_lm_path",
+                            help="path to source lm model (arpa format).")
+        parser.add_argument("-m", "--trg_lm_path", action="store", dest="trg_lm_path",
+                            help="path to target lm model (arpa format).")
+        parser.add_argument("-n", "--trg_ncount_path", action="store", dest="trg_ncount_path",
+                            help="path to ngram-count model (arpa format).")
         parser.add_argument("-t", "--train", dest="train", action="store_true",
                             help="learn model defined in config file.")
+        parser.add_argument("-f", "--extract_features", dest="feature_extraction",
+                            action="store_true", help="extract features from input.")
+        parser.add_argument("-p", "--inference", dest="inference", action="store_true",
+                            help="load model stated in config file on input.")
         parser.add_argument("-i", "--input", dest="input", action="store",
-                            help="load input file to run inference on it.")
+                            help="input file (tsv with two columnts: src, trg).")
         parser.add_argument("-o", "--output", dest="output", action="store",
                             help="write program output to file.")
-        parser.add_argument("-p", "--inference", dest="inference",
-                            action="store_true",
-                            help="load model stated in config file on input.")
-        parser.add_argument("-f", "--extract_features",
-                            dest="feature_extraction", action="store_true",
-                            help="load model stated in config file on input.")
 
         # Process arguments
         args = parser.parse_args()
@@ -79,7 +85,23 @@ def main(argv=None):  # IGNORE:C0111
                 inference_from_file(model, args.input)
 
         elif args.feature_extraction:
-            features = extract_features(args.input)
+            if not args.srilm_path:
+                srilm_path = os.getenv('SRILM_PATH', None)
+            if not srilm_path:
+                log.info('You must provide SRILM path, either using'
+                         '--srilm_path parameter or by setting $SRILM_PATH'
+                         'enviroment variable.')
+                return 0
+
+            if not args.src_lm_path:
+                log.info('You must provide src LM path with --src_lm_path parameter')
+                return 0
+            if not args.trg_lm_path:
+                log.info('You must provide trg LM path with --trg_lm_path parameter')
+                return 0
+
+            features = extract_features(args.input, srilm_path, args.src_lm_path,
+                                        args.trg_lm_path, args.trg_ncount_path)
             if args.output:
                 with open(args.output, 'w') as outfile:
                     for line in features:
